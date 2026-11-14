@@ -86,27 +86,26 @@ Output of `npm test`:
 
 ## Bonus 3: Explain your reducer
 
-A reducer has to be pure because React treats state as a value it can compare. After `dispatch`,
-React checks whether the new state is a different object from the old one; if I mutated the old
-array with `push` and returned it, the reference would be the same and React could skip the re-render,
-so the screen would not update. In Strict Mode React also calls the reducer twice in development, so
-a reducer that changes things outside itself, or mutates its input, would add a task twice or give
-different results. Purity also keeps things like Undo possible: the old `tasks` arrays in `past` stay
-valid because nobody changes them.
+The reducer has to be pure because React compares the old state and the new state to decide if it
+should re-render. If I change the old array with something like `push` and return the same array,
+React sees the same reference and may not update the screen. Also, in Strict Mode React runs the
+reducer two times in development. If the reducer mutates the state, the change can happen twice, for
+example a task gets added two times. Keeping it pure also helped me with Undo, because the old task
+lists in `past` never change, so I can safely go back to them.
 
-The caller creates the id with `crypto.randomUUID()` because generating a random value is a side
-effect. If the reducer did it, the same state and action would give a different result every time,
-and the double call in Strict Mode would produce two different ids for one task. Tests would also be
-harder because the output could not be predicted.
+The id is created in `AddForm` with `crypto.randomUUID()` and not in the reducer, because a random
+value is a side effect. If the reducer made the id, the same state and the same action would give a
+different result every time, and Strict Mode would even create two different ids for one task.
 
-The filtered list and the counts are derived because they can always be computed from `tasks` and
-`filter`. If I stored `filteredTasks` in state, I would have to remember to update it in every
-action. For example, after pressing Next on a task while the filter is *To do*, the stored list would
-still show that task, and the counts would go stale after a delete. One source of truth avoids this.
+I do not store the filtered list or the counts, I calculate them from `tasks` and `filter` every time
+the component renders. If I kept a `filteredTasks` array in state, I would have to update it in every
+action, and it is easy to forget one. For example, if the filter is *To do* and I press Next on a task,
+a stored list would still show that task even though it is now *in-progress*. With one source of truth this cannot happen.
 
-Moving the filter into the reducer made one thing easier: `clearDone` and the filter are handled in
-one place and the state is one object, so a single test can check both. It made Undo slightly harder,
-because I had to decide that `setFilter` must not create an undo step.
+Moving the filter into the reducer made testing easier, because all the state and all the changes
+are in one place and I can test them without React. The
+harder part was Undo: I had to make sure that `setFilter` does not add a step to `past`, because the
+assignment says changing the filter should not be undoable.
 
 ## Bonus 4: Git repository
 
