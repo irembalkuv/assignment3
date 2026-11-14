@@ -110,7 +110,7 @@ because I had to decide that `setFilter` must not create an undo step.
 
 ## Bonus 4: Git repository
 
-GITHUB_LINK_PLACEHOLDER
+https://github.com/irembalkuv/assignment3
 
 The history has a separate commit for each step (state shape and new actions, filter functions,
 filter bar, undo, tests, README and screenshots). `.gitignore` leaves out `node_modules` and `dist`.
