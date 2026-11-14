@@ -1,3 +1,4 @@
+// İrem Balkuv - 2200004679
 import type { Task } from './taskReducer'
 
 type TaskRowProps = { task: Task; onNext: () => void; onDelete: () => void }
